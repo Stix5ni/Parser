@@ -9,7 +9,7 @@ HEADERS = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gec
            'accept': '*/*'}
 HOST = 'https://www.avito.ru'
 FILE = 'jobs.csv'
-my_dir = 'C:/Users/Happy/Desktop/All about python//DB'
+my_dir = 'C:/Users/Happy/Desktop/All about python/DB'
 FULLNAME = os.path.join(my_dir, FILE) #полный путь сохраняемого файла
 
 
