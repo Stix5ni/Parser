@@ -10,7 +10,7 @@ HEADERS = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gec
 HOST = 'https://www.avito.ru'
 FILE = 'jobs.csv'
 my_dir = 'C:/Users/Happy/Desktop/All about python//DB'
-FNAME = os.path.join(my_dir, FILE) #полный путь сохраняемого файла
+FULLNAME = os.path.join(my_dir, FILE) #полный путь сохраняемого файла
 
 
 class WorkWithFile():
@@ -74,14 +74,14 @@ def parse(): #парсинг страницы
         pages_count = get_pages_count(html.text)
         get_parsing_result(pages_count, URL, jobs)
         print(f'Найдено {len(jobs)} предложений по работе')
-        file_exists = WorkWithFile.check_file(FNAME)
+        file_exists = WorkWithFile.check_file(FULLNAME)
         if file_exists:
-            WorkWithFile.delete_file(FNAME)
-            WorkWithFile.save_file(jobs, FNAME)
-            os.startfile(FNAME)
+            WorkWithFile.delete_file(FULLNAME)
+            WorkWithFile.save_file(jobs, FULLNAME)
+            os.startfile(FULLNAME)
         else:
-            WorkWithFile.save_file(jobs, FNAME)
-            os.startfile(FNAME)
+            WorkWithFile.save_file(jobs, FULLNAME)
+            os.startfile(FULLNAME)
     else:
         print(html.status_code)
         print('Error')
