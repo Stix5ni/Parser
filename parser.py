@@ -5,11 +5,12 @@ import os
 
 import csv
 
-
 HEADERS = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0',
            'accept': '*/*'}
 HOST = 'https://www.avito.ru'
 FILE = 'jobs.csv'
+my_dir = 'C:/Users/Happy/Desktop/All about python//DB'
+FNAME = os.path.join(my_dir, FILE) #полный путь сохраняемого файла
 
 
 class WorkWithFile():
@@ -22,6 +23,7 @@ class WorkWithFile():
             writer.writerow(['Специальность', 'Зарплата в рублях', 'Ссылка'])
             for item in items:
                 writer.writerow([item['title'], item['rub'], item['link']])
+
     def check_file(path):
         return os.path.exists(path)
     def delete_file(path):
@@ -33,11 +35,14 @@ def get_html(URL, params = None): #получение html-страницы
 
 def get_pages_count(html): #получение кол-ва страниц
     soup = BeautifulSoup(html, 'html.parser')
-    pagination = soup.find('div', class_='pagination-root-Ntd_O')
-    line = pagination.text
-    p_count = int(line[-9:-7])
-    if p_count > 1:
-        return p_count
+    if soup.find('div', class_='pagination-root-Ntd_O'): #проверка на нахождение кол-ва страниц
+        pagination = soup.find('div', class_='pagination-root-Ntd_O')
+        line = pagination.text
+        p_count = int(line[-9:-7])
+        if p_count > 1:
+            return p_count
+        else:
+            return 1
     else:
         return 1
 
@@ -66,17 +71,17 @@ def parse(): #парсинг страницы
     html = get_html(URL)
     if html.status_code == 200:
         jobs = []
-        pages_count = get_pages_count(html.text),
+        pages_count = get_pages_count(html.text)
         get_parsing_result(pages_count, URL, jobs)
         print(f'Найдено {len(jobs)} предложений по работе')
-        file_exists = WorkWithFile.check_file(FILE)
+        file_exists = WorkWithFile.check_file(FNAME)
         if file_exists:
-            WorkWithFile.delete_file(FILE)
-            WorkWithFile.save_file(jobs, FILE)
-            os.startfile(FILE)
+            WorkWithFile.delete_file(FNAME)
+            WorkWithFile.save_file(jobs, FNAME)
+            os.startfile(FNAME)
         else:
-            WorkWithFile.save_file(jobs, FILE)
-            os.startfile(FILE)
+            WorkWithFile.save_file(jobs, FNAME)
+            os.startfile(FNAME)
     else:
         print(html.status_code)
         print('Error')
