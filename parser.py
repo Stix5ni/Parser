@@ -1,7 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
-import requests
+
 import os
+
 import csv
 
 
@@ -52,17 +53,21 @@ def get_content(html): #получение определённого конте
         })
     return jobs
 
-def parse():
+def get_parsing_result(pages_count, URL, jobs): #прогон парсинга
+    for page in range(1, pages_count+1):
+        print(f'Парсинг страницы {page} из {pages_count}...')
+        html = get_html(URL, params={'page': page})
+        jobs.extend(get_content(html.text))
+    return jobs
+
+def parse(): #парсинг страницы
     URL = input('Введите нужную ссылку на Авито: ')
     URL.split()
     html = get_html(URL)
     if html.status_code == 200:
         jobs = []
-        pages_count = get_pages_count(html.text)
-        for page in range(1, pages_count+1):
-            print(f'Парсинг страницы {page} из {pages_count}...')
-            html = get_html(URL, params={'page': page})
-            jobs.extend(get_content(html.text))
+        pages_count = get_pages_count(html.text),
+        get_parsing_result(pages_count, URL, jobs)
         print(f'Найдено {len(jobs)} предложений по работе')
         file_exists = WorkWithFile.check_file(FILE)
         if file_exists:
