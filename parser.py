@@ -10,11 +10,27 @@ HEADERS = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gec
 HOST = 'https://www.avito.ru'
 FILE = 'jobs.csv'
 
-def get_html(URL, params = None):
+
+class WorkWithFile():
+    '''Работа системы с файлами'''
+    def __init__(self):
+        pass
+    def save_file(items, path):
+        with open(path, 'w', newline='') as f:
+            writer = csv.writer(f, delimiter = ';')
+            writer.writerow(['Специальность', 'Зарплата в рублях', 'Ссылка'])
+            for item in items:
+                writer.writerow([item['title'], item['rub'], item['link']])
+    def check_file(path):
+        return os.path.exists(path)
+    def delete_file(path):
+        os.remove(path)
+        
+def get_html(URL, params = None): #получение html-страницы
     r = requests.get(URL,headers=HEADERS, params=params, timeout=30)
     return r
 
-def get_pages_count(html):
+def get_pages_count(html): #получение кол-ва страниц
     soup = BeautifulSoup(html, 'html.parser')
     pagination = soup.find('div', class_='pagination-root-Ntd_O')
     line = pagination.text
@@ -24,20 +40,7 @@ def get_pages_count(html):
     else:
         return 1
 
-def save_file(items, path):
-    with open(path, 'w', newline='') as f:
-        writer = csv.writer(f, delimiter = ';')
-        writer.writerow(['Специальность', 'Зарплата в рублях', 'Ссылка'])
-        for item in items:
-             writer.writerow([item['title'], item['rub'], item['link']])
-
-def check_file(path):
-    return os.path.exists(path)
-
-def delete_file(path):
-    os.remove(path)
-
-def get_content(html):
+def get_content(html): #получение определённого контента от html-страницы
     soup = BeautifulSoup(html, 'html.parser')
     items = soup.find_all('div', class_='js-catalog-item-enum')
     jobs = []
@@ -61,13 +64,13 @@ def parse():
             html = get_html(URL, params={'page': page})
             jobs.extend(get_content(html.text))
         print(f'Найдено {len(jobs)} предложений по работе')
-        file_exists = check_file(FILE)
+        file_exists = WorkWithFile.check_file(FILE)
         if file_exists:
-            delete_file(FILE)
-            save_file(jobs, FILE)
+            WorkWithFile.delete_file(FILE)
+            WorkWithFile.save_file(jobs, FILE)
             os.startfile(FILE)
         else:
-            save_file(jobs, FILE)
+            WorkWithFile.save_file(jobs, FILE)
             os.startfile(FILE)
     else:
         print(html.status_code)
